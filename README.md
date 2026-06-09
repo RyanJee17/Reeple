@@ -6,7 +6,7 @@ Reeple est un assistant numérique B2B sur tablette et mobile, conçu pour les g
 
 Projet réalisé dans le cadre du programme **My Digital Start-up** à MyDigitalSchool (MBA 2025-2027).
 
----
+
 
 ## Le produit
 
@@ -16,7 +16,7 @@ Reeple se compose de deux modules complémentaires :
 
 **Catalogue Vivant** : Un outil de gestion de stock intelligent qui identifie les jeux dormants, suit l'activité des auteurs et détecte les opportunités de bundles. L'objectif est d'aider le vendeur à redécouvrir son propre catalogue.
 
----
+
 
 ## Liens
 
@@ -26,7 +26,7 @@ Reeple se compose de deux modules complémentaires :
 | Landing page | [reeeple.figma.site](https://reeeple.figma.site) |
 | Contact | [hello.reeple@gmail.com](mailto:hello.reeple@gmail.com) |
 
----
+
 
 ## Stack technique
 
@@ -38,7 +38,7 @@ Prototype  Figma (haute fidélité)
 Backlog    GitHub Issues + Milestones
 ```
 
----
+
 
 ## Structure du repo
 -# A mettre à jour quand l'architecture évolue
@@ -53,7 +53,7 @@ Reeple/
 └── vite.config.ts
 ```
 
----
+
 
 ## Avancement du projet
 
@@ -64,7 +64,7 @@ Reeple/
 | Ms2 - MVP Alpha | Écrans secondaires, Design System complet, tests utilisateurs | À venir (automne 2026) |
 | Ms3 - Jalon 3 Lancement | Prototype final, dossiers individuels, soutenance jury | À venir (printemps 2027) |
 
----
+
 
 ## Équipe
 
@@ -75,7 +75,7 @@ Reeple/
 | Marketing | MBA Expert Marketing Digital (x2) |
 | Développement Full-Stack | MBA Développement Full-Stack |
 
----
+
 
 ## Contexte académique
 
