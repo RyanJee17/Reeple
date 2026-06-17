@@ -16,27 +16,26 @@ Reeple se compose de deux modules complémentaires :
 
 **Catalogue Vivant** : Un outil de gestion de stock intelligent qui identifie les jeux dormants, suit l'activité des auteurs et détecte les opportunités de bundles. L'objectif est d'aider le vendeur à redécouvrir son propre catalogue.
 
-
+Le vendeur reste décisionnaire : Reeple propose, il choisit. 
 
 ## Liens
 
-| Ressource | Lien |
-|---|---|
-| Maquette Figma | [Reeple Maquette](https://www.figma.com/design/ZVZ3e9kgh5OdM9mP5q6yTC/Reeple-Maquette?m=auto&t=reFSGvpGTpnFbJBQ-6) |
-| Landing page | [reeeple.figma.site](https://reeeple.figma.site) |
-| Contact | [hello.reeple@gmail.com](mailto:hello.reeple@gmail.com) |
+| Ressource       | Lien                                                                                                         |
+|-----------------|--------------------------------------------------------------------------------------------------------------|
+| Maquette Figma  | [Reeple Maquette](https://www.figma.com/design/ZVZ3e9kgh5OdM9mP5q6yTC/Reeple-Maquette?m=auto&t=reFSGvpGTpnFbJBQ-6) |
+| Landing page    | [reeeple.figma.site](https://reeeple.figma.site)                                                             |
+| Contact         | [hello.reeple@gmail.com](mailto:hello.reeple@gmail.com)                                                      |
 
 
 
 ## Stack technique
 
-L'application sera développée sous forme de **PWA en React**. La base de code actuelle est un prototype généré via Figma Make, amené à être remplacé lors de la phase de développement (M2).
+L'application sera développée sous forme de **PWA en React** avec un backend Node/Express. 
 
-```
-Frontend   PWA React
-Prototype  Figma (haute fidélité)
-Backlog    GitHub Issues + Milestones
-```
+- **Frontend** : PWA React (Vite, TypeScript, Tailwind)
+- **Backend** : Node.js / Express (API REST)
+- **Prototype UI** : Maquettes haute fidélité sur Figma
+- **Backlog** : GitHub Issues + Milestones
 
 
 
@@ -46,34 +45,42 @@ Backlog    GitHub Issues + Milestones
 ```
 Reeple/
 ├── .github/
-│   └── ISSUE_TEMPLATE/     # Template d'issue projet
-├── src/                    # Base de code (en cours)
-├── index.html
-├── package.json
-└── vite.config.ts
+│   └── ISSUE_TEMPLATE/        # Templates d'issues projet
+├── frontend/                  # Application PWA React (Vite)
+│   ├── src/                   # Code source front
+│   ├── index.html
+│   ├── package.json
+│   ├── vite.config.ts
+│   └── tsconfig.json
+├── backend/                   # API Node/Express
+│   ├── src/                   # Code source back
+│   ├── package.json
+│   └── tsconfig.json          # Si TypeScript
+├── README.md
+└── package.json               
 ```
 
 
 
 ## Avancement du projet
 
-| Milestone | Description | Statut |
-|---|---|---|
-| Ms0 - Prototype Figma | Écrans Conseil Client + Catalogue Vivant, Design System, audits accessibilité et éco-conception | Terminé |
-| Ms1 - Jalon 2 Business Plan | Priorisation fonctionnalités, roadmap M2/M3, chiffrage UX/UI | En cours |
-| Ms2 - MVP Alpha | Écrans secondaires, Design System complet, tests utilisateurs | À venir (automne 2026) |
-| Ms3 - Jalon 3 Lancement | Prototype final, dossiers individuels, soutenance jury | À venir (printemps 2027) |
+| Milestone               | Description                                                                                          | Statut        |
+|-------------------------|------------------------------------------------------------------------------------------------------|---------------|
+| Ms0 - Prototype Figma   | Écrans Conseil Client + Catalogue Vivant, Design System, audits accessibilité et éco-conception     | Terminé       |
+| Ms1 - Jalon 2 Business Plan | Priorisation fonctionnalités, roadmap M2/M3, chiffrage UX/UI                                   | En cours      |
+| Ms2 - MVP Alpha         | Écrans secondaires, Design System complet, tests utilisateurs                                       | À venir (automne 2026) |
+| Ms3 - Jalon 3 Lancement | Prototype final, dossiers individuels, soutenance jury                                             | À venir (printemps 2027) |
 
 
 
 ## Équipe
 
-| Rôle | Spécialité |
-|---|---|
-| UX/UI Design | MBA Expert UX/UI Design |
-| Direction Artistique | MBA Direction Artistique Digitale |
-| Marketing | MBA Expert Marketing Digital (x2) |
-| Développement Full-Stack | MBA Développement Full-Stack |
+| Rôle                    | Spécialité                         |
+|-------------------------|------------------------------------|
+| UX/UI Design            | MBA Expert UX/UI Design            |
+| Direction Artistique    | MBA Direction Artistique Digitale  |
+| Marketing               | MBA Expert Marketing Digital (x2)  |
+| Développement Full-Stack| MBA Développement Full-Stack       |
 
 
 
@@ -81,11 +88,66 @@ Reeple/
 
 Ce projet est réalisé dans le cadre du programme **My Digital Start-up** de MyDigitalSchool, déployé sur deux ans (M1 et M2). Il mobilise une approche Lean Startup avec des jalons de validation progressive (Go/No Go, Business Plan, Lancement).
 
-Jalon 1 (Go/No Go) : validé.
-Jalon 2 (Business Plan) : en cours - juin 2026.
-Jalon 3 (Réalisation et Lancement) : printemps 2027.
+- Jalon 1 (Go/No Go) : validé
+- Jalon 2 (Business Plan) : en cours - juin 2026
+- Jalon 3 (Réalisation et Lancement) : printemps 2027
 
-## Lancer le code
 
-Lancer `npm i` pour installer les dépendances
-Lancer `npm run dev` pour lancer le serveur de dev.
+
+## Lancer le projet
+
+### Prérequis
+
+- Node.js LTS
+- npm ou pnpm
+
+
+
+### 1. Cloner le repo
+
+```bash
+git clone <url-du-repo>
+cd Reeple
+```
+
+
+
+### 2. Installer les dépendances
+
+Frontend :
+
+```bash
+cd frontend
+npm install
+```
+
+Backend :
+
+```bash
+cd backend
+npm install
+```
+
+
+
+### 3. Lancer le frontend (PWA React)
+
+Depuis le dossier `frontend` :
+
+```bash
+npm run dev
+```
+
+Par défaut, l’application est accessible sur :  
+`http://localhost:5173` 
+
+### 4. Lancer le backend (API)
+
+Depuis le dossier `backend` :
+
+```bash
+npm run dev
+```
+
+Par défaut, l’API est accessible sur :  
+`http://localhost:3000`
