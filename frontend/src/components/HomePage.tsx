@@ -73,10 +73,10 @@ export function HomePage({ onNavigate }: HomePageProps) {
               </div>
               <div className="flex-1">
                 <h3 className="text-[#0D1B1E] text-xl mb-1">
-                  Rechercher un client
+                  Rechercher un jeu ou un client
                 </h3>
                 <p className="text-[#0D1B1E]/70">
-                  MyLudo ID ou pseudo
+                  BoardGameGeek ou profil client
                 </p>
               </div>
             </div>

@@ -64,6 +64,7 @@
   "scripts": {
     "test": "vitest",
     "dev": "vite",
-    "build": "vite build"
+    "build": "vite build",
+    "preview": "vite preview --host 127.0.0.1"
   }
 }

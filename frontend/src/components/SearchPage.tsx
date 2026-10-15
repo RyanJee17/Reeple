@@ -1,7 +1,7 @@
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import logoReeple from 'figma:asset/c71e2c6b7b9368dfe5d8a1f334d3ba6e7407f51f.png';
-import { useState } from 'react';
+import { useState, type FormEvent } from 'react';
 import { Card } from './ui/card';
 import { ArrowLeft, Search, QrCode, X, User, Gamepad2, ShoppingCart, Package } from 'lucide-react';
 import { mockPlayers, mockGames, type Player } from '../data/mockData';
@@ -10,11 +10,61 @@ interface SearchPageProps {
   onNavigate: (page: string, playerId?: string) => void;
 }
 
+interface BggSearchGame {
+  id: number;
+  title: string;
+  yearPublished?: number;
+}
+
+interface BggSearchResponse {
+  query: string;
+  total: number;
+  games: BggSearchGame[];
+}
+
+interface BggSearchErrorResponse {
+  error: string;
+}
+
+type BggSearchState = 'idle' | 'loading' | 'success' | 'empty' | 'error';
+
+function isBggSearchResponse(value: unknown): value is BggSearchResponse {
+  if (typeof value !== 'object' || value === null) {
+    return false;
+  }
+
+  const response = value as Partial<BggSearchResponse>;
+  return (
+    typeof response.query === 'string' &&
+    typeof response.total === 'number' &&
+    Array.isArray(response.games) &&
+    response.games.every(
+      (game) =>
+        typeof game.id === 'number' &&
+        typeof game.title === 'string' &&
+        (game.yearPublished === undefined || typeof game.yearPublished === 'number'),
+    )
+  );
+}
+
+function getApiErrorMessage(value: unknown): string | undefined {
+  if (typeof value !== 'object' || value === null) {
+    return undefined;
+  }
+
+  const response = value as Partial<BggSearchErrorResponse>;
+  return typeof response.error === 'string' ? response.error : undefined;
+}
+
 export function SearchPage({ onNavigate }: SearchPageProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedPlayer, setSelectedPlayer] = useState<Player | null>(null);
   const [showQRScanner, setShowQRScanner] = useState(false);
   const [scannedWishlist, setScannedWishlist] = useState<string | null>(null);
+  const [bggQuery, setBggQuery] = useState('');
+  const [bggResponse, setBggResponse] = useState<BggSearchResponse | null>(null);
+  const [bggSearchState, setBggSearchState] = useState<BggSearchState>('idle');
+  const [bggError, setBggError] = useState('');
 
   const filteredPlayers = searchQuery
     ? mockPlayers.filter((p) =>
@@ -31,6 +81,50 @@ export function SearchPage({ onNavigate }: SearchPageProps) {
     });
     setScannedWishlist(mockWishlistData);
     setShowQRScanner(false);
+  };
+
+  const handleBggSearch = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const query = bggQuery.trim();
+
+    if (!query) {
+      setBggResponse(null);
+      setBggError('Saisissez le nom d’un jeu pour lancer la recherche.');
+      setBggSearchState('error');
+      return;
+    }
+
+    setBggResponse(null);
+    setBggError('');
+    setBggSearchState('loading');
+
+    try {
+      const response = await fetch(
+        `/api/bgg/search?query=${encodeURIComponent(query)}`,
+        { headers: { Accept: 'application/json' } },
+      );
+      const payload: unknown = await response.json();
+
+      if (!response.ok) {
+        throw new Error(
+          getApiErrorMessage(payload) ?? 'La recherche n’a pas abouti. Réessayez.',
+        );
+      }
+
+      if (!isBggSearchResponse(payload)) {
+        throw new Error('La réponse du serveur est invalide. Réessayez.');
+      }
+
+      setBggResponse(payload);
+      setBggSearchState(payload.games.length > 0 ? 'success' : 'empty');
+    } catch (error) {
+      setBggError(
+        error instanceof Error
+          ? error.message
+          : 'Une erreur inattendue est survenue. Réessayez.',
+      );
+      setBggSearchState('error');
+    }
   };
 
   return (
@@ -50,6 +144,84 @@ export function SearchPage({ onNavigate }: SearchPageProps) {
           </div>
           <h1 className="text-[#F8F7ED] text-2xl">Rechercher un joueur</h1>
         </div>
+
+        <Card className="p-6 bg-[#0D1B1E]/80 backdrop-blur border-[#FFDA6B]/20">
+          <h2 className="text-[#F8F7ED] text-lg mb-4">
+            Rechercher un jeu dans BoardGameGeek
+          </h2>
+          <form
+            aria-label="Recherche BoardGameGeek"
+            onSubmit={handleBggSearch}
+            className="flex flex-col sm:flex-row gap-3"
+          >
+            <div className="flex-1">
+              <label htmlFor="bgg-game-query" className="sr-only">
+                Nom du jeu
+              </label>
+              <Input
+                id="bgg-game-query"
+                type="search"
+                placeholder="Nom du jeu…"
+                value={bggQuery}
+                onChange={(event) => {
+                  setBggQuery(event.target.value);
+                  setBggResponse(null);
+                  setBggError('');
+                  setBggSearchState('idle');
+                }}
+                disabled={bggSearchState === 'loading'}
+                className="h-14 bg-[#0D1B1E]/80 border-[#E09891]/20 text-[#F8F7ED] placeholder:text-[#F8F7ED]/40 text-lg"
+              />
+            </div>
+            <Button
+              type="submit"
+              disabled={bggSearchState === 'loading'}
+              className="h-14 px-6 bg-[#FFDA6B] hover:bg-[#FFDA6B]/90 text-[#0D1B1E]"
+            >
+              <Search className="w-5 h-5 mr-2" />
+              {bggSearchState === 'loading' ? 'Recherche…' : 'Rechercher un jeu'}
+            </Button>
+          </form>
+
+          {bggSearchState === 'loading' && (
+            <p role="status" className="mt-4 text-[#F8F7ED]">
+              Recherche des jeux sur BoardGameGeek…
+            </p>
+          )}
+          {bggSearchState === 'error' && (
+            <Card role="alert" className="mt-4 p-4 bg-[#A50104]/20 border-[#A50104]/40">
+              <p className="text-[#F8F7ED]">{bggError}</p>
+            </Card>
+          )}
+          {bggSearchState === 'empty' && (
+            <p role="status" className="mt-4 text-[#F8F7ED]">
+              Aucun jeu trouvé pour « {bggResponse?.query} ».
+            </p>
+          )}
+          {bggSearchState === 'success' && bggResponse && (
+            <div className="mt-5">
+              <h3 className="text-[#F8F7ED] text-lg mb-3">
+                {bggResponse.total} jeu{bggResponse.total > 1 ? 'x' : ''} trouvé
+                {bggResponse.total > 1 ? 's' : ''}
+              </h3>
+              <ul className="space-y-3" aria-label="Résultats BoardGameGeek">
+                {bggResponse.games.map((game) => (
+                  <li
+                    key={game.id}
+                    className="flex items-center justify-between gap-4 p-4 bg-[#E09891]/10 rounded-xl"
+                  >
+                    <span className="text-[#F8F7ED]">{game.title}</span>
+                    {game.yearPublished !== undefined && (
+                      <span className="text-[#F8F7ED]/60 text-sm">
+                        {game.yearPublished}
+                      </span>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </Card>
 
         {/* Search Bar */}
         <div className="flex gap-3">

@@ -3,9 +3,13 @@
   import react from '@vitejs/plugin-react';
   import tailwindcss from '@tailwindcss/vite';
   import * as path from 'path';
+  import { fileURLToPath } from 'node:url';
+  import { reeplePwa } from './reeple-pwa';
+
+  const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
   export default defineConfig({
-    plugins: [react(), tailwindcss()],
+    plugins: [react(), tailwindcss(), reeplePwa()],
     resolve: {
       extensions: ['.js', '.jsx', '.ts', '.tsx', '.json'],
       alias: {
@@ -71,5 +75,16 @@
     server: {
       port: 5173,
       open: true,
+      proxy: {
+        '/api': {
+          target: 'http://localhost:3000',
+          changeOrigin: true,
+        },
+      },
+    },
+    preview: {
+      proxy: {
+        '/api': { target: 'http://127.0.0.1:3000', changeOrigin: true },
+      },
     },
   });

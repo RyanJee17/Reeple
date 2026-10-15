@@ -1,5 +1,11 @@
 # Reeple
 
+## Application adaptée à la maquette
+
+La version locale reprend le parcours de conseil, le catalogue vivant et les réglages avec la palette navy/corail/ivoire. Elle comprend l’import CSV, les sauvegardes locales et une PWA pour la version de production. **[Démarrage, fonctionnalités et limites → DEMARRAGE.md](./DEMARRAGE.md)**.
+
+L’ancien prototype est conservé et accessible depuis l’aide de la nouvelle application. Les informations suivantes présentent le contexte initial du projet.
+
 > *"Chaque référence mérite sa chance"*
 
 Reeple est un assistant numérique B2B sur tablette et mobile, conçu pour les gérants de boutiques de jeux de société indépendantes en France et en Belgique. Il aide les vendeurs à conseiller leurs clients et à mieux valoriser leur stock, sans remplacer leur expertise.
