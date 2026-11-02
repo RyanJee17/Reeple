@@ -1,10 +1,10 @@
 {
   "id": "/",
-  "name": "Reeple — Conseil et catalogue vivant",
+  "name": "Reeple — Catalogue vivant",
   "short_name": "Reeple",
-  "description": "Reeple propose, le vendeur décide. Un espace de conseil et de valorisation du catalogue.",
+  "description": "Reeple lit votre stock, signale ce qui mérite attention et propose des pistes. Vous gardez la main.",
   "lang": "fr",
-  "start_url": "/#conseil",
+  "start_url": "/#catalogue",
   "scope": "/",
   "display": "standalone",
   "background_color": "#FAF6F0",

@@ -1,8 +1,16 @@
 # Reeple
 
+## Cadrage produit actuel
+
+Depuis le recentrage d’octobre 2026, Reeple vise une page principale desktop qui combine visualisation du stock et suggestions d’action, à partir d’exports périodiques de la boutique. Le vendeur garde la décision. Le Conseil Client devient un plugin optionnel payant, hors du périmètre de conception actuel.
+
+Le cadrage de référence est décrit dans **[docs/BRIEF_PRODUIT.md](./docs/BRIEF_PRODUIT.md)**. Le format d’import du prototype et les hypothèses à valider avec une boutique sont documentés dans **[docs/CONTRAT_EXPORT_STOCK.md](./docs/CONTRAT_EXPORT_STOCK.md)**.
+
 ## Application adaptée à la maquette
 
-La version locale reprend le parcours de conseil, le catalogue vivant et les réglages avec la palette navy/corail/ivoire. Elle comprend l’import CSV, les sauvegardes locales et une PWA pour la version de production. **[Démarrage, fonctionnalités et limites → DEMARRAGE.md](./DEMARRAGE.md)**.
+L’accueil est le Catalogue : quatre indicateurs, un graphique de stock interactif, des suggestions reliées aux références et un tableau avec historiques de ventes. Les filtres s’appliquent à ces vues ensemble. Le vendeur retient une piste (commande, mise en rayon ou conseil), ajuste une quantité, reporte ou ignore une suggestion. Les décisions restent locales ; aucune commande n’est transmise.
+
+Les couleurs, typographies et dimensions de la nouvelle page proviennent des variables exportées du Design System Figma. La page comporte l’import CSV daté, les sauvegardes locales et la PWA existante. **[Démarrage, fonctionnalités et limites → DEMARRAGE.md](./DEMARRAGE.md)**.
 
 L’ancien prototype est conservé et accessible depuis l’aide de la nouvelle application. Les informations suivantes présentent le contexte initial du projet.
 
@@ -14,7 +22,7 @@ Projet réalisé dans le cadre du programme **My Digital Start-up** à MyDigital
 
 
 
-## Le produit
+## Présentation historique, avant le recentrage
 
 Reeple se compose de deux modules complémentaires :
 

@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
 import { toast } from 'sonner';
 import { initialData, refreshAssets, type AppData, type Game, type LogEntry } from './model';
+import { isStockSnapshot, isStockDecision } from './stock';
 
 const KEY = 'reeple.workspace.v1';
 export function isGame(value: unknown): value is Game {
@@ -23,7 +24,9 @@ export function validateData(value: unknown): value is AppData {
     (!!d.shop.name.trim()) && (!d.shop.logo || /^(data:image\/(png|jpeg|webp);base64,|\/)/.test(d.shop.logo)) &&
     !!d.preferences && [d.preferences.dormantDays, d.preferences.noveltyDays].every(n => Number.isInteger(n) && n >= 1 && n <= 730) && typeof d.preferences.onlyInStock === 'boolean' &&
     Array.isArray(d.actions) && d.actions.every(a => typeof a.key === 'string' && typeof a.gameId === 'string' && ['dormant','new','bundle','trend'].includes(a.category) && ['done','later'].includes(a.status) && Number.isFinite(Date.parse(a.at)) && (!a.until || Number.isFinite(Date.parse(a.until)))) &&
-    Array.isArray(d.logs) && d.logs.every(l => typeof l.id === 'string' && typeof l.text === 'string' && Number.isFinite(Date.parse(l.at)));
+    Array.isArray(d.logs) && d.logs.every(l => typeof l.id === 'string' && typeof l.text === 'string' && Number.isFinite(Date.parse(l.at))) &&
+    (d.stockSnapshot === undefined || isStockSnapshot(d.stockSnapshot)) &&
+    (d.stockDecisions === undefined || (Array.isArray(d.stockDecisions) && d.stockDecisions.every(isStockDecision)));
 }
 function loadData(): AppData {
   try { const raw = localStorage.getItem(KEY); if (raw) { const parsed: unknown = JSON.parse(raw); if (validateData(parsed)) return refreshAssets(parsed); localStorage.setItem(`${KEY}.recovery`, raw); } } catch { /* Private mode or damaged backup: start an isolated demo. */ }

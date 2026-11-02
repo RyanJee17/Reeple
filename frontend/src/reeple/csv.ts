@@ -1,7 +1,7 @@
 import type { Game } from './model';
 
 // Quoted fields, escaped quotes, CRLF, UTF-8 BOM and either common separator.
-function rows(text: string): string[][] {
+export function parseCsvRows(text: string): string[][] {
   text = text.replace(/^\uFEFF/, '');
   const first = text.split(/\r?\n/)[0];
   const separator = first.includes(';') ? ';' : ',';
@@ -18,7 +18,7 @@ function rows(text: string): string[][] {
   return result;
 }
 export function parseCatalogue(text: string): Game[] {
-  const [headers, ...lines] = rows(text);
+  const [headers, ...lines] = parseCsvRows(text);
   if (!headers || !lines.length) throw new Error('Le fichier doit contenir un en-tête et au moins un jeu.');
   if (lines.length > 10000) throw new Error('Import limité à 10 000 références par fichier.');
   const normalized = headers.map(h => h.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/\s+/g, '_'));

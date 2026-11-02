@@ -1,4 +1,5 @@
 import { demoReferences, type DemoReference } from './demoReferences';
+import { demoStockSnapshot, type StockSnapshot, type StockDecision } from './stock';
 import bombImage from './assets/bomb-busters.png';
 import orderImage from './assets/order-overload.png';
 import crewImage from './assets/the-crew.png';
@@ -17,7 +18,7 @@ export interface Shop { name: string; address: string; city: string; postcode: s
 export interface Preferences { dormantDays: number; noveltyDays: number; onlyInStock: boolean; }
 export interface Action { key: string; gameId: string; category: Category; status: 'done' | 'later'; at: string; until?: string; }
 export interface LogEntry { id: string; at: string; text: string; }
-export interface AppData { version: 1; demo: boolean; games: Game[]; shop: Shop; preferences: Preferences; actions: Action[]; logs: LogEntry[]; }
+export interface AppData { version: 1; demo: boolean; games: Game[]; shop: Shop; preferences: Preferences; actions: Action[]; logs: LogEntry[]; stockSnapshot?: StockSnapshot; stockDecisions?: StockDecision[]; }
 export const money = (value: number) => new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(value);
 export const dateLabel = (value: string) => new Date(value).toLocaleString('fr-FR', { dateStyle: 'short', timeStyle: 'short' });
 export function daysSince(value?: string) {
@@ -39,7 +40,7 @@ function referenceFields(id: string) {
 export function initialData(): AppData {
   const base = { recommended: 0, season: 'Toute l’année' };
   return {
-    version: 1, demo: true,
+    version: 1, demo: true, stockSnapshot: demoStockSnapshot(), stockDecisions: [],
     shop: { name: 'Break Out Grenoble', address: '', city: 'Grenoble', postcode: '38000', description: 'Boutique de jeux de société indépendante. Les bons jeux, les bons conseils.', firstName: '', email: '', logo: shopImage },
     preferences: { dormantDays: 90, noveltyDays: 60, onlyInStock: true }, actions: [], logs: [],
     games: [
@@ -78,7 +79,7 @@ export function eligibleGames(data: AppData, category: Category): Game[] {
 export function refreshAssets(data: AppData): AppData {
   const seed = initialData();
   const legacyDemo = data.demo && data.games.some(g => !g.bgg && !g.demoReference && seed.games.some(s => s.id === g.id && s.title === g.title));
-  const games = data.games.map(g => {
+  const games: Game[] = data.games.map(g => {
     const original = seed.games.find(s => s.id === g.id);
     const image = g.image?.startsWith('/') ? original?.image : g.image;
     // Keep local shop values and API imports. Upgrade only known demo records.
@@ -92,5 +93,5 @@ export function refreshAssets(data: AppData): AppData {
       if (!games.some(g => g.id === game.id)) games.push(game);
     }
   }
-  return { ...data, shop: { ...data.shop, logo: data.shop.logo.startsWith('/') ? seed.shop.logo : data.shop.logo }, games };
+  return { ...data, stockSnapshot: data.stockSnapshot ?? (data.demo ? seed.stockSnapshot : undefined), shop: { ...data.shop, logo: data.shop.logo.startsWith('/') ? seed.shop.logo : data.shop.logo }, games };
 }
