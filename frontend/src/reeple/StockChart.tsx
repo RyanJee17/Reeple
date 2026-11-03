@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useState, type MouseEvent as ReactMouseEvent } from 'react';
 import { StockButton as Button } from './StockButton';
 import { STOCK_STATUS, type StockAnalysis } from './stock';
 
@@ -33,11 +33,12 @@ export function StockChart({ analyses, selected, markers, onSelect, onViewRow }:
   const [showOk, setShowOk] = useState(false);
   const [focusFamily, setFocusFamily] = useState(false);
   const [hoveredId, setHoveredId] = useState<string | null>(null);
+  const [pointer, setPointer] = useState<{ x: number; y: number } | null>(null);
   const available = useMemo(() => analyses.filter(item => item.age !== null && item.averageSales !== null), [analyses]);
   const candidates = available.filter(item => showOk || item.status !== 'ok');
   const points = candidates.slice(0, 750);
   const hovered = points.find(item => item.reference.id === hoveredId);
-  const width = 900, height = 600, left = 64, right = 24, top = 38, bottom = 84;
+  const width = 904, height = 694, left = 64, right = 24, top = 38, bottom = 84;
   const chartWidth = width - left - right, chartHeight = height - top - bottom;
   const xMax = Math.max(360, Math.ceil(Math.max(0, ...points.map(item => item.age ?? 0)) / 90) * 90);
   const threshold = selected?.reference.minimumWeeklySales;
@@ -45,11 +46,18 @@ export function StockChart({ analyses, selected, markers, onSelect, onViewRow }:
   const x = (age: number) => left + age / xMax * chartWidth;
   const y = (sales: number) => top + chartHeight - sales / yMax * chartHeight;
   const excluded = analyses.length - available.length;
+  function trackPointer(event: ReactMouseEvent<HTMLDivElement>) {
+    if ((event.target as HTMLElement).closest('.stock-chart-tooltip')) return;
+    const bounds = event.currentTarget.getBoundingClientRect();
+    setPointer({ x: Math.max(12, Math.min(event.clientX - bounds.left + 20, bounds.width - 272)), y: Math.max(12, Math.min(event.clientY - bounds.top + 20, bounds.height - 220)) });
+  }
+  const tooltipLeft = pointer ? pointer.x : Math.min(65, Math.max(10, x(hovered?.age ?? 0) / width * 100 - 8)) + '%';
+  const tooltipTop = pointer ? pointer.y : Math.max(8, Math.min(58, y(hovered?.averageSales ?? 0) / height * 100 - 28)) + '%';
 
   return <div className="stock-chart-panel">
     <div className="stock-chart-heading"><div><h2>Ancienneté et ventes</h2><p>{selected ? <>Seuil de {selected.reference.title} · {selected.reference.family ?? 'famille non renseignée'}</> : 'Un point par référence · taille selon le stock'}</p></div><Button className="stock-button stock-small" variant="ghost" aria-pressed={focusFamily} onClick={() => setFocusFamily(!focusFamily)}>{focusFamily ? 'Tout voir' : 'Isoler la famille'}</Button></div>
     <div className="stock-chart-meta"><button onClick={() => setShowOk(!showOk)}>{showOk ? 'Masquer les références OK' : `${available.filter(item => item.status === 'ok').length} OK masquées · afficher`}</button><span>Ventes moyennes · 4 dernières semaines</span></div>
-    {!available.length ? <div className="stock-chart-empty"><h3>Les données du graphique manquent encore.</h3><p>Ajoutez les 12 semaines de ventes et la date d’entrée en stock dans votre prochain export. Le tableau reste consultable.</p></div> : <div className="stock-chart-canvas" onMouseLeave={() => setHoveredId(null)}>
+    {!available.length ? <div className="stock-chart-empty"><h3>Les données du graphique manquent encore.</h3><p>Ajoutez les 12 semaines de ventes et la date d’entrée en stock dans votre prochain export. Le tableau reste consultable.</p></div> : <div className="stock-chart-canvas" onMouseMove={trackPointer} onMouseLeave={() => { setHoveredId(null); setPointer(null); }}>
       <svg viewBox={`0 0 ${width} ${height}`} role="group" aria-label="Ancienneté en stock et ventes moyennes. Sélectionnez un repère pour retrouver sa référence.">
         <title>Ancienneté et ventes de votre stock</title>
         {threshold !== undefined && <>
@@ -76,14 +84,14 @@ export function StockChart({ analyses, selected, markers, onSelect, onViewRow }:
           const size = Math.min(19, Math.max(6, Math.sqrt(item.reference.stock) * 3));
           const marker = markers.get(id);
           const muted = focusFamily && selected?.reference.family !== item.reference.family;
-          return <g key={id} role="button" tabIndex={0} aria-label={`${item.reference.title} : ${STOCK_STATUS[item.status].label}, ${item.reference.stock} en stock, ${decimal(item.averageSales)} ventes par semaine`} aria-pressed={selected?.reference.id === id} className={`stock-chart-point ${item.status} ${muted ? 'muted' : ''} ${selected?.reference.id === id ? 'selected' : ''}`} onClick={() => { onSelect(id); setHoveredId(id); }} onMouseEnter={() => setHoveredId(id)} onFocus={() => setHoveredId(id)} onKeyDown={event => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); onSelect(id); setHoveredId(id); } }}>
+          return <g key={id} role="button" tabIndex={0} aria-label={`${item.reference.title} : ${STOCK_STATUS[item.status].label}, ${item.reference.stock} en stock, ${decimal(item.averageSales)} ventes par semaine`} aria-pressed={selected?.reference.id === id} className={`stock-chart-point ${item.status} ${muted ? 'muted' : ''} ${selected?.reference.id === id ? 'selected' : ''}`} onClick={() => { onSelect(id); setHoveredId(id); }} onMouseEnter={() => setHoveredId(id)} onFocus={() => { setPointer(null); setHoveredId(id); }} onKeyDown={event => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); onSelect(id); setHoveredId(id); } }}>
             <circle cx={pointX} cy={pointY} r={Math.max(16, size + 3)} className="stock-chart-hit" />
             <StockShape status={item.status} x={pointX} y={pointY} size={size} />
             {marker && <g className="stock-chart-marker"><line x1={pointX + size / 2} x2={pointX + 29} y1={pointY - size / 2} y2={Math.max(16, pointY - 30)} /><circle cx={pointX + 30} cy={Math.max(16, pointY - 30)} r="13" /><text x={pointX + 30} y={Math.max(16, pointY - 30) + 4} textAnchor="middle">{marker}</text></g>}
           </g>;
         })}
       </svg>
-      {hovered && <div className="stock-chart-tooltip" style={{ left: `${Math.min(65, Math.max(10, x(hovered.age!) / width * 100 - 8))}%`, top: `${Math.max(8, Math.min(58, y(hovered.averageSales!) / height * 100 - 28))}%` }}>
+      {hovered && <div className="stock-chart-tooltip" style={{ left: typeof tooltipLeft === 'number' ? `${tooltipLeft}px` : tooltipLeft, top: typeof tooltipTop === 'number' ? `${tooltipTop}px` : tooltipTop }}>
         <strong>{hovered.reference.title}</strong><span>{hovered.reference.publisher ?? 'Éditeur non renseigné'} · {hovered.reference.family ?? 'Famille non renseignée'}</span>
         <div className="stock-tooltip-metrics"><span>Stock<b>{hovered.reference.stock}</b></span><span>Ventes / sem.<b>{decimal(hovered.averageSales)}</b></span><span>Couverture<b>{decimal(hovered.coverage)} sem.</b></span></div>
         <StockSparkline values={hovered.reference.weeklySales} />

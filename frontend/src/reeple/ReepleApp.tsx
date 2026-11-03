@@ -1,5 +1,5 @@
 import { lazy, Suspense, useEffect, useRef, useState } from 'react';
-import { ArrowLeft, Clock3, Download, ExternalLink, Sparkles, Upload, WifiOff } from 'lucide-react';
+import { ArrowLeft, Clock3, Download, ExternalLink, Upload, WifiOff } from 'lucide-react';
 import { Toaster, toast } from 'sonner';
 import { StockButton as Button } from './StockButton';
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from '../components/ui/dialog';
@@ -72,7 +72,7 @@ function Application() {
   const freshness = !snapshot?.exportedAt ? 'partial' : stale ? 'stale' : 'fresh';
   const initials = data.shop.name.split(/\s+/).slice(0, 2).map(word => word[0]).join('').toUpperCase();
 
-  return <div className="reeple-app reeple-stock-app">
+  return <div className={`reeple-app reeple-stock-app ${route}`}>
     <a className="reeple-skip-link" href="#reeple-main" onClick={event => { event.preventDefault(); main.current?.focus(); main.current?.scrollIntoView(); }}>Aller au contenu</a>
     <header className="stock-header">
       <a href="#catalogue" className="stock-brand" aria-label="Reeple, catalogue vivant"><img src={logo} alt="Reeple" /></a>
@@ -84,7 +84,7 @@ function Application() {
     {!online && <div className="reeple-offline" role="status"><WifiOff size={16} />Hors ligne. Votre dernier export et vos décisions locales restent accessibles.</div>}
     {!saved && <div className="reeple-storage-warning" role="alert">Sauvegarde locale indisponible : exportez votre espace depuis Paramètres → Aide avant de fermer.</div>}
     <main id="reeple-main" tabIndex={-1} ref={main}>{route === 'catalogue' && <StockOverview onImport={() => setImportOpen(true)} />}{route === 'reglages' && <Settings tab={settingsTab} setTab={setSettingsTab} openLegacy={() => navigate('prototype')} />}</main>
-    <footer className="stock-app-footer"><span>Reeple propose, vous décidez.<span> · Données sur cet appareil · Mise à jour par export</span></span><div><button onClick={() => setPluginOpen(true)}><Sparkles size={14} />Conseil Client · plugin à venir</button>{installPrompt && <button onClick={install}><Download size={14} />Installer l’app</button>}<button onClick={() => { setSettingsTab('help'); navigate('reglages'); }}>Aide<ExternalLink size={13} /></button></div></footer>
+    <footer className="stock-app-footer"><span>Reeple propose, vous décidez.<span> · Données sur cet appareil · Mise à jour par export</span></span><div>{installPrompt && <button onClick={install}><Download size={14} />Installer l’app</button>}<button onClick={() => { setSettingsTab('help'); navigate('reglages'); }}>Aide<ExternalLink size={13} /></button></div></footer>
     <StockImportDialog open={importOpen} onClose={() => setImportOpen(false)} />
     <Dialog open={pluginOpen} onOpenChange={setPluginOpen}><DialogContent className="reeple-stock-dialog stock-plugin-dialog"><DialogTitle>Conseil Client : une évolution possible</DialogTitle><DialogDescription>Un plugin optionnel, payant séparément, envisagé pour accompagner le conseil en boutique.</DialogDescription><p>Le cœur de Reeple reste votre stock : repérer ce qui mérite attention, examiner les pistes et décider de vos actions.</p><p>Le plugin Conseil Client ne fait pas partie de la version actuelle. Aucun abonnement ni paiement n’est activé ici.</p><Button className="stock-button" data-tone="secondary" onClick={() => setPluginOpen(false)}>Revenir à mon stock</Button></DialogContent></Dialog>
   </div>;
